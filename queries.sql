@@ -136,3 +136,95 @@ WHERE sm.skill_name = 'Aptitude'
 AND sp.level_reached >= 50
 GROUP BY c.college_name
 ORDER BY avg_days_to_reach_level50;
+
+-- Q2: Structural tracks with fail rate > 40%
+
+SELECT
+    sm.skill_name,
+    COUNT(*) AS total_students,
+    SUM(CASE WHEN sp.failed = TRUE THEN 1 ELSE 0 END) AS failed_students,
+    ROUND(
+        (
+            SUM(CASE WHEN sp.failed = TRUE THEN 1 ELSE 0 END)::DECIMAL
+            / COUNT(*)
+        ) * 100,
+        2
+    ) AS fail_rate_percentage
+FROM student_progress sp
+JOIN skill_modules sm
+ON sp.skill_id = sm.skill_id
+GROUP BY sm.skill_name
+HAVING (
+    SUM(CASE WHEN sp.failed = TRUE THEN 1 ELSE 0 END)::DECIMAL
+    / COUNT(*)
+) > 0.40
+ORDER BY fail_rate_percentage DESC;
+-- Q3: Count unique students with 7+ day active streak
+
+WITH streaks AS (
+    SELECT
+        student_id,
+        activity_date,
+        activity_date
+        - ROW_NUMBER() OVER (
+            PARTITION BY student_id
+            ORDER BY activity_date
+        )::INT AS streak_group
+    FROM daily_activity
+)
+
+SELECT
+    COUNT(DISTINCT student_id)
+    AS students_with_7plus_day_streak
+FROM (
+    SELECT
+        student_id,
+        COUNT(*) AS streak_length
+    FROM streaks
+    GROUP BY student_id, streak_group
+    HAVING COUNT(*) >= 7
+) s;
+-- Q4: Skill completion rate per skill module
+
+SELECT
+    sm.skill_name,
+    COUNT(DISTINCT sp.student_id) AS total_students,
+    
+    COUNT(DISTINCT CASE 
+        WHEN sp.completed = TRUE THEN sp.student_id 
+    END) AS completed_students,
+
+    ROUND(
+        COUNT(DISTINCT CASE 
+            WHEN sp.completed = TRUE THEN sp.student_id 
+        END) * 100.0
+        / COUNT(DISTINCT sp.student_id),
+        2
+    ) AS completion_rate_percentage
+
+FROM student_progress sp
+JOIN skill_modules sm
+    ON sp.skill_id = sm.skill_id
+
+GROUP BY sm.skill_name
+ORDER BY completion_rate_percentage DESC;
+
+-- Q5: Top 10 colleges ranked by historical student placement rate
+
+SELECT
+    c.college_name,
+    COUNT(DISTINCT p.student_id) AS total_students,
+    SUM(CASE WHEN p.placed = TRUE THEN 1 ELSE 0 END) AS placed_students,
+    ROUND(
+        SUM(CASE WHEN p.placed = TRUE THEN 1 ELSE 0 END)::DECIMAL
+        / COUNT(DISTINCT p.student_id) * 100,
+        2
+    ) AS placement_rate_percentage
+FROM placements p
+JOIN students s
+    ON p.student_id = s.student_id
+JOIN colleges c
+    ON s.college_id = c.college_id
+GROUP BY c.college_name
+ORDER BY placement_rate_percentage DESC
+LIMIT 10;

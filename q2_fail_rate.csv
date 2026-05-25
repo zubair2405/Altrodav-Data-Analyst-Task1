@@ -1,0 +1,8 @@
+
+| skill_name | total_students | failed_students | fail_rate_percentage |
+| ---------- | -------------- | --------------- | -------------------- |
+| Python     | 1              | 1               | 100.00               |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/rUERTdaynD8sUeeX2UeJfS/0)

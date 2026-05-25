@@ -1,0 +1,21 @@
+# INSIGHTS.md
+
+## 1. Dropout Risk in Python Track (Q2)
+Python has a fail rate >40%. Altrodav should introduce
+checkpoint assessments or peer mentoring before Level 40
+to reduce early dropouts.
+
+## 2. Low Engagement — Only 1 Student Has a 7-Day Streak (Q3)
+Platform engagement is critically low. Introducing daily
+streaks, gamification badges, or reminder notifications
+could improve retention significantly.
+
+## 3. QIS College Needs Targeted Support (Q1)
+QIS students take longer to reach Level 50 in Aptitude.
+College-specific intervention programs or fast-track
+modules could close this gap.
+
+## 4. Placement Rate Disparity Across Colleges (Q5)
+Some colleges show 100% placement while others lag behind.
+Altrodav should partner more deeply with high-performing
+colleges and diagnose what skill gaps exist at lower-ranked ones.
